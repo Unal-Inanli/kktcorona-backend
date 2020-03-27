@@ -9,7 +9,14 @@ var dataAccess = new DataAccess();
 
 router.post('/login', passport.authenticate('local'), (req, res) => {
 
-    res.send({ username: req.user.username, id: req.user._id });
+    let data = {
+        username: req.user.username,
+        id: req.user._id,
+        hasProfile: req.user.hasProfile,
+        isVolunteer: req.user.isVolunteer
+    }
+
+    res.send(data);
 });
 
 router.get('/login', (req, res) => {
