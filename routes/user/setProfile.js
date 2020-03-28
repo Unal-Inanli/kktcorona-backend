@@ -5,7 +5,7 @@ const { UserManager } = require("../../classes/UserManager");
 
 let userManager = new UserManager();
 
-router.post("/", ensureAuthenticated, async (req, res) => {
+router.post("/setProfile", ensureAuthenticated, async (req, res) => {
   const { id, firstName, lastName, Bio } = req.body;
   const data = {
     FirstName: firstName,

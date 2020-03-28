@@ -14,6 +14,11 @@ const login = require("../routes/login");
 const checkAuth = require("../routes/checkAuth");
 const logout = require("../routes/logout");
 const setProfile = require("../routes/user/setProfile");
+const getProfile = require("../routes/user/getProfile");
+const createListing = require("../routes/user/createListing");
+const listingCollection = require("../routes/listing/listingCollection");
+const listingSingle = require("../routes/listing/listingSingle");
+const getProfileSingle = require("../routes/user/getProfileSingle");
 //Passport Config
 require("../modules/passport")(passport);
 
@@ -48,7 +53,12 @@ app.use("/", register);
 app.use("/", login);
 app.use("/", checkAuth);
 app.use("/", logout);
-app.use("/user/setProfile", setProfile);
+app.use("/user", setProfile);
+app.use("/user", getProfile);
+app.use("/user", createListing);
+app.use("/user", getProfileSingle);
+app.use("/listing", listingCollection);
+app.use("/listing", listingSingle);
 
 //Connection
 mongoose
