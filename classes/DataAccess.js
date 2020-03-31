@@ -40,6 +40,20 @@ class DataAccess {
     var user = await User.findById(id);
     return user.userProfile;
   }
+
+  async searchCollection(query, Model) {
+    var collection = await Model.aggregate([
+      {
+        $match: {
+          title: {
+            $regex: query,
+            $options: "i"
+          }
+        }
+      }
+    ]);
+    return collection;
+  }
 }
 
 exports.DataAccess = DataAccess;

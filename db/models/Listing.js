@@ -14,4 +14,5 @@ const Listing = new Schema({
   }
 });
 
+Listing.index({ title: "text", body: "text" });
 module.exports = mongoose.model("Listing", Listing, "listings");
