@@ -24,8 +24,10 @@ class DataAccess {
   async getCollection(Model) {
     try {
       var result = await Model.find({});
+
       return result;
     } catch (err) {
+      if (err) throw err;
       return false;
     }
   }

@@ -21,6 +21,7 @@ const listingCollection = require("../routes/listing/listingCollection");
 const listingSingle = require("../routes/listing/listingSingle");
 const getProfileSingle = require("../routes/user/getProfileSingle");
 const listingSearch = require("../routes/listing/listingSearch");
+const chatBubbles = require("../routes/user/chatBubbles");
 //Passport Config
 require("../modules/passport")(passport);
 
@@ -62,6 +63,7 @@ app.use("/user", getProfileSingle);
 app.use("/listing", listingCollection);
 app.use("/listing", listingSingle);
 app.use("/listing", listingSearch);
+app.use("/collection", chatBubbles);
 
 //Connection
 mongoose
@@ -83,25 +85,37 @@ var users = {};
 io.of("/chat").on("connection", function(socket) {
   socket.on("join", function({ id, username }) {
     users[id] = { id: socket.id, username };
-    console.log(users[id]);
+    console.log(users);
   });
 
   socket.on("incomingMessage", function({ fromId, toId, message }) {
     var user = users[fromId];
+    if (user) {
+      console.log(user);
+      if (users[toId].id) {
+        socket.broadcast
+          .to(users[toId].id)
+          .emit("messageSent", { from: user, fromId, toId, message });
+      }
+    }
+  });
+
+  socket.on("disconnect", function() {
+    for (var prop in users) {
+      if (users[prop].id === socket.id) {
+        delete users[prop];
+        console.log("deleted");
+      }
+    }
+  });
+  socket.on("checkActivity", function({ id }) {
+    var user = users[id];
     console.log(user);
-    socket.broadcast
-      .to(users[toId].id)
-      .emit("messageSent", { from: user, fromId, toId, message });
-  });
-
-  socket.on("pm", function({ from, message, room }) {
-    socket.broadcast.to(users[room]).emit("receiveMessage", { from, message });
-  });
-
-  socket.on("initChat", function({ requesteeId, username, requesterId }) {
-    socket.broadcast
-      .to(users[requesteeId])
-      .emit("createChat", { id: requesterId, username, chatId: requesteeId });
+    if (user != null) {
+      socket.emit("statusUpdate", { status: "Online", id });
+    } else {
+      socket.emit("statusUpdate", { status: "Offline", id });
+    }
   });
 });
 //Server Init
